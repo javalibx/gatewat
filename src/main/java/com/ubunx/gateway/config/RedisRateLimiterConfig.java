@@ -22,15 +22,4 @@ public class RedisRateLimiterConfig {
             return Mono.just(ip);
         };
     }
-
-    @Bean("userIdResolver")
-    public KeyResolver userIdResolver() {
-        return exchange -> {
-            String userId = exchange.getRequest().getHeaders().getFirst(RequestHeaders.AUTH_ID);
-            if (Objects.isNull(userId)) {
-                return null;
-            }
-            return Mono.just(userId);
-        };
-    }
 }

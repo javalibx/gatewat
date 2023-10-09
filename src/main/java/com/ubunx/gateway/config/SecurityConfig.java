@@ -1,38 +1,28 @@
 package com.ubunx.gateway.config;
 
 
-import com.ubunx.gateway.filter.AuthFilter;
 import com.ubunx.gateway.security.JwtAuthenticationEntryPoint;
 import com.ubunx.gateway.security.ResourceService;
 import com.ubunx.gateway.security.authorization.ResourceAccessDeniedHandler;
 import com.ubunx.gateway.security.authorization.ResourceAuthorizationManager;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
-import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.oauth2.server.resource.web.server.ServerBearerTokenAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-
-import javax.crypto.SecretKey;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @EnableWebFluxSecurity
 public class SecurityConfig {
-
-    @Value("${jwt.public.key}")
-    RSAPublicKey key;
-
-    @Value("${jwt.private.key}")
-    RSAPrivateKey privy;
-
 
     @Bean
     ResourceAuthorizationManager resourceAuthorizationManager(ResourceService resourceService) {
@@ -46,8 +36,8 @@ public class SecurityConfig {
         httpSecurity
                 .oauth2ResourceServer()
                 .jwt()
-//                .jwtAuthenticationConverter()
-                .jwtDecoder(jwtDecoder())
+                // 将jwt信息转换成JwtAuthenticationToken对象
+                .jwtAuthenticationConverter(grantedAuthoritiesExtractor())
                 .and()
                 // 将token转换成一个认证对象
                 .bearerTokenConverter(new ServerBearerTokenAuthenticationConverter())
@@ -58,26 +48,30 @@ public class SecurityConfig {
                 .and()
                 // 请求拦截处理
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/auth/**").permitAll()
+                        .pathMatchers("/auth/**", "/pub/**").permitAll()
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyExchange()
                         .access(resourceAuthorizationManager)
                 )
                 .formLogin().disable()
                 .httpBasic().disable()
-                .cors().disable()
-                .addFilterAfter(new AuthFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
-                // 认证后将认证透传
+                .httpBasic().disable()
+                .cors().disable();
+        // 认证后将认证透传
 
         return httpSecurity.build();
     }
 
-    @Bean
-    ReactiveJwtDecoder jwtDecoder() {
-        return NimbusReactiveJwtDecoder.withSecretKey(secretKey()).build();
-    }
+    Converter<Jwt, Mono<AbstractAuthenticationToken>> grantedAuthoritiesExtractor() {
+        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        // 去掉 SCOPE_ 的前缀
+        authoritiesConverter.setAuthorityPrefix("");
+        // 从 jwt claim 中那个字段获取权限，模式是从 scope 或 scp 字段中获取
+        authoritiesConverter.setAuthoritiesClaimName("scp");
 
-    SecretKey secretKey() {
-        return new HmacKey("");
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+
+        return new ReactiveJwtAuthenticationConverterAdapter(jwtAuthenticationConverter);
     }
 }

@@ -1,3 +1,5 @@
+server:
+  port: 8090
 spring:
   cloud:
     gateway:
@@ -6,5 +8,13 @@ spring:
           uri: lb://uc-server
           predicates:
             - Path=/api/**
-        - id: hr-service
-          uri: lb://hr-server
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:key.pub
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+debug: true
