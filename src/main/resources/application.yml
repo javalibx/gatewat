@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: uc-service
+          uri: lb://uc-server
+          predicates:
+            - Path=/api/**
+        - id: hr-service
+          uri: lb://hr-server
