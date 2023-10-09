@@ -8,6 +8,7 @@ import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.server.*;
 
 import java.util.HashMap;
@@ -30,7 +31,8 @@ public class GatewayErrorWebExceptionHandler extends DefaultErrorWebExceptionHan
         Map<String, Object> errorAttributes = new HashMap<>();
         errorAttributes.put("success", false);
         errorAttributes.put("code", GatewayError.COMMON.getCode());
-        errorAttributes.put("message", error.getMessage());
+        String message = StringUtils.hasText(error.getMessage()) ? error.getMessage() : GatewayError.COMMON.getMessage();
+        errorAttributes.put("message", message);
         errorAttributes.put("data", null);
         return errorAttributes;
     }
