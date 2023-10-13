@@ -1,6 +1,7 @@
 package com.ubunx.gateway.config;
 
 
+import com.javalibx.component.common.support.constant.SecurityConstants;
 import com.ubunx.gateway.security.JwtAuthenticationEntryPoint;
 import com.ubunx.gateway.security.ResourceService;
 import com.ubunx.gateway.security.authorization.ResourceAccessDeniedHandler;
@@ -48,7 +49,7 @@ public class SecurityConfig {
                 .and()
                 // 请求拦截处理
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/auth/**", "/pub/**").permitAll()
+                        .pathMatchers("/auth/**", "/pub/**", "/actuator/**").permitAll()
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyExchange()
                         .access(resourceAuthorizationManager)
@@ -65,9 +66,9 @@ public class SecurityConfig {
     Converter<Jwt, Mono<AbstractAuthenticationToken>> grantedAuthoritiesExtractor() {
         JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
         // 去掉 SCOPE_ 的前缀
-        authoritiesConverter.setAuthorityPrefix("");
+        authoritiesConverter.setAuthorityPrefix(SecurityConstants.AUTHORITY_PREFIX);
         // 从 jwt claim 中那个字段获取权限，模式是从 scope 或 scp 字段中获取
-        authoritiesConverter.setAuthoritiesClaimName("scp");
+        authoritiesConverter.setAuthoritiesClaimName(SecurityConstants.AUTHORITY_CLAIM_NAME);
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);

@@ -1,13 +1,10 @@
 package com.ubunx.gateway.config;
 
-import com.javalibx.component.common.support.constant.RequestHeaders;
 import com.ubunx.gateway.util.ServerRequestUtils;
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
-
-import java.util.Objects;
 
 /**
  * 基于 Redis 限流策略配置

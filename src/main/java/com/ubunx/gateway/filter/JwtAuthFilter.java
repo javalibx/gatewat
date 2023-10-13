@@ -1,6 +1,7 @@
 package com.ubunx.gateway.filter;
 
 import com.javalibx.component.common.support.constant.RequestHeaders;
+import com.javalibx.component.common.support.constant.SecurityConstants;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -12,7 +13,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-public class JwtFilter implements GlobalFilter, Ordered {
+public class JwtAuthFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         // 从Spring Security上下文中获取JWT令牌中的信息
@@ -22,9 +23,9 @@ public class JwtFilter implements GlobalFilter, Ordered {
             // 在这里，你可以从JWT中提取需要的信息，并将其存储在请求头或请求属性中
             ServerHttpRequest request = exchange.getRequest().mutate()
                     .headers(headers -> {
-                        headers.set(RequestHeaders.AUTH_ID, jwt.getClaim("sub"));
-                        headers.set(RequestHeaders.AUTH_TYPE, jwt.getClaim("subType"));
-                        headers.set(RequestHeaders.AUTH_SCOPE, jwt.getClaim("scp"));
+                        headers.set(RequestHeaders.AUTH_ID, jwt.getClaim(SecurityConstants.AUTHORITY_AUTH_ID_NAME));
+                        headers.set(RequestHeaders.AUTH_TYPE, jwt.getClaim(SecurityConstants.AUTHORITY_AUTH_TYPE_NAME));
+                        headers.set(RequestHeaders.AUTH_SCOPE, jwt.getClaim(SecurityConstants.AUTHORITY_CLAIM_NAME));
                     })
                     .build();
             exchange = exchange.mutate().request(request).build();

@@ -1,0 +1,24 @@
+debug: true
+spring:
+  cloud:
+    nacos:
+      server-addr: http://127.0.0.1:8848
+      username: dev
+      password: dev@123
+      discovery:
+        namespace: dev
+        group: job
+      config:
+        namespace: dev
+        group: job
+        file-extension: yml
+    gateway:
+      routes:
+        - id: uc-service
+          uri: lb://uc-server
+          predicates:
+            - Path=/api/**
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: root@123

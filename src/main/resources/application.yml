@@ -1,20 +1,10 @@
 server:
   port: 8090
 spring:
-  cloud:
-    gateway:
-      routes:
-        - id: uc-service
-          uri: lb://uc-server
-          predicates:
-            - Path=/api/**
+  profiles:
+    active: dev
   security:
     oauth2:
       resourceserver:
         jwt:
           public-key-location: classpath:key.pub
-  redis:
-    host: 127.0.0.1
-    port: 6379
-
-debug: true
