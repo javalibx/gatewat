@@ -64,7 +64,7 @@ public class ResourceAuthorizationManager implements ReactiveAuthorizationManage
                 .filter(Authentication::isAuthenticated)
                 .filter(a -> a instanceof JwtAuthenticationToken)
                 .cast(JwtAuthenticationToken.class)
-                .doOnNext(t -> log.info(t.toString()))
+                .doOnNext(t -> log.info("[RAM] 认证信息为-{}", t.toString()))
                 .flatMapIterable(Authentication::getAuthorities)
                 .map(GrantedAuthority::getAuthority)
                 .any(authorities::contains)

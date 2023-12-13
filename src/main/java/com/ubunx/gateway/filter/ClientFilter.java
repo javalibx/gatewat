@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
  * 客户端IP过滤器，获取真实的客户端IP，并将IP透传
  */
 @Component
-public class ClientIpFilter implements GlobalFilter, Ordered {
+public class ClientFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String ip = ServerRequestUtils.getClientIp(exchange.getRequest());

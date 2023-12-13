@@ -1,0 +1,22 @@
+spring:
+  cloud:
+    nacos:
+      server-addr: http://127.0.0.1:8848
+      username: dev
+      password: dev@123
+      discovery:
+        namespace: job
+        group: job
+      config:
+        namespace: job
+        group: job
+        file-extension: yml
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: root@123
+security:
+  jwt:
+    private-key: classpath:app.key
+    public-key: classpath:app.pub

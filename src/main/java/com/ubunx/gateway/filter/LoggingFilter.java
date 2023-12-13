@@ -20,7 +20,7 @@ import java.util.Objects;
  */
 @Slf4j
 @Component
-public class RequestLogFilter implements GlobalFilter, Ordered {
+public class LoggingFilter implements GlobalFilter, Ordered {
 
     private static final String START_TIME = "startTime";
 
@@ -36,7 +36,7 @@ public class RequestLogFilter implements GlobalFilter, Ordered {
                 RequestLog requestLog = new RequestLog();
                 requestLog.setExecuteTime(executeTime);
                 requestLog.setIp(ip);
-                requestLog.setMethod(exchange.getRequest().getMethodValue());
+                requestLog.setMethod(exchange.getRequest().getMethod().name());
                 requestLog.setUri(exchange.getRequest().getURI().getRawPath());
                 requestLog.setQueries(exchange.getRequest().getQueryParams());
                 log.info("[GatewayLog] 请求信息 - {}", requestLog);

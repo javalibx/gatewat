@@ -10,16 +10,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-public class JwtAuthFilter implements GlobalFilter, Ordered {
+@Component
+public class AuthFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         // 从Spring Security上下文中获取JWT令牌中的信息
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof JwtAuthenticationToken) {
-            Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+        if (authentication instanceof JwtAuthenticationToken jat) {
+            Jwt jwt = jat.getToken();
             // 在这里，你可以从JWT中提取需要的信息，并将其存储在请求头或请求属性中
             ServerHttpRequest request = exchange.getRequest().mutate()
                     .headers(headers -> {
