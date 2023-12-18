@@ -23,4 +23,15 @@ public class ServerResponseUtils {
                 .doOnError(error -> DataBufferUtils.release(buffer));
     }
 
+    public static <T> Mono<Void> failure(ServerWebExchange exchange, ApiResponse<T> result) {
+        ServerHttpResponse response = exchange.getResponse();
+        response.setStatusCode(HttpStatus.OK);
+        response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        DataBufferFactory dataBufferFactory = response.bufferFactory();
+        DataBuffer buffer = dataBufferFactory.wrap(result.toJsonBytes());
+
+        return response.writeWith(Mono.just(buffer))
+                .doOnError(error -> DataBufferUtils.release(buffer));
+    }
+
 }

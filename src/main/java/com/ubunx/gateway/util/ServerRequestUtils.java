@@ -40,11 +40,11 @@ public class ServerRequestUtils {
             // 获取代理 IP
             for (String header : HEADER_IP_KEYWORDS) {
                 ipAddress = headers.getFirst(header);
-                if (!StringUtils.hasText(ipAddress) && UNKNOWN.equalsIgnoreCase(ipAddress)) {
+                if (StringUtils.hasText(ipAddress) && !UNKNOWN.equalsIgnoreCase(ipAddress)) {
                     break;
                 }
             }
-            if (StringUtils.hasText(ipAddress) || UNKNOWN.equalsIgnoreCase(ipAddress)) {
+            if (!StringUtils.hasText(ipAddress) || UNKNOWN.equalsIgnoreCase(ipAddress)) {
                 InetSocketAddress address = request.getRemoteAddress();
                 if (Objects.nonNull(address)) {
                     ipAddress = address.getAddress().getHostAddress();

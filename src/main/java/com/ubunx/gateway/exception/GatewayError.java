@@ -7,10 +7,16 @@ import lombok.Getter;
 @Getter
 public enum GatewayError implements Error {
     COMMON("G00001", "网关内部异常"),
-    UC_FALLBACK("U00001", "UC 服务暂不可用，请稍后重试..."),
-    HR_ERROR("H00001", "HR 服务暂不可用，请稍后重试..."),
-    TC_ERROR("T00001", "TC 服务暂不可用，请稍后重试..."),
-    IM_ERROR("I00001", "IM 服务暂不可用，请稍后重试...");
+    AUTHENTICATION_ERROR("G01001", "认证失败..."),
+    AUTHORIZATION_ERROR("G01002", "该资源权限受限..."),
+
+    UC_FALLBACK("G02001", "UC 服务暂不可用，请稍后重试..."),
+
+    HR_ERROR("G03001", "HR 服务暂不可用，请稍后重试..."),
+
+    TC_ERROR("G04001", "TC 服务暂不可用，请稍后重试..."),
+
+    IM_ERROR("G05001", "IM 服务暂不可用，请稍后重试...");
 
     private final String code;
     private final String message;

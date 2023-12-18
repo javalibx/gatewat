@@ -1,22 +1,24 @@
 spring:
   cloud:
-    nacos:
-      server-addr: http://127.0.0.1:8848
-      username: dev
-      password: dev@123
+    consul:
+      host: localhost # consul代理ip
+      port: 8500 # consul代理端口
+      enabled: true #启用 spring cloud consul
       discovery:
-        namespace: job
-        group: job
+        # 配置服务注册到Consul上
+        register: true # 是否开启在 consul 中注册服务
+        instance-id: ${spring.application.name}:${server.port} # 配置注册到consul 服务的id
+        enabled: true # 启用 consul 服务发现
+        service-name: ${spring.application.name} # 设置 注册到 consul 的服务名称
+        ip-address: 192.168.161.250 # 访问服务时使用的 ip地址 （还必须设置preferIpAddress才能使用）
+        prefer-ip-address: true
+        health-check-path: /actuator/health   # 定义 consul 健康检查路径
+        health-check-interval: 10s # consul 健康检查频率
+        metadata:
+          my-key: myValue
       config:
-        namespace: job
-        group: job
-        file-extension: yml
-  data:
-    redis:
-      host: 127.0.0.1
-      port: 6379
-      password: root@123
-security:
-  jwt:
-    private-key: classpath:app.key
-    public-key: classpath:app.pub
+        enabled: true
+        format: YAML
+        profile-separator: ':' # profiles配置分隔符,默认为‘,’
+        default-context: apps # 设置默认的配置，被所有的应用读取
+        data-key: data

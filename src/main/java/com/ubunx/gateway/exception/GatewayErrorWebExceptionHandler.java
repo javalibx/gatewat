@@ -29,7 +29,6 @@ public class GatewayErrorWebExceptionHandler extends DefaultErrorWebExceptionHan
     protected Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
         Throwable error = super.getError(request);
         Map<String, Object> errorAttributes = new HashMap<>();
-        errorAttributes.put("success", false);
         errorAttributes.put("code", GatewayError.COMMON.getCode());
         String message = StringUtils.hasText(error.getMessage()) ? error.getMessage() : GatewayError.COMMON.getMessage();
         errorAttributes.put("message", message);

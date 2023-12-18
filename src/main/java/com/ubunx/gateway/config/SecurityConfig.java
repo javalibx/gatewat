@@ -47,7 +47,7 @@ public class SecurityConfig {
         log.info("[GSC] 加载Security配置信息...");
         httpSecurity
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/auth/**", "/pub/**", "/actuator/**").permitAll()
+                        .pathMatchers("/auth/**", "/hr/**", "/pub/**", "/actuator/**").permitAll()
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyExchange()
                         .access(resourceAuthorizationManager)
@@ -65,8 +65,8 @@ public class SecurityConfig {
                 })
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-                .cors(ServerHttpSecurity.CorsSpec::disable);
-        // 认证后将认证透传
+                .cors(ServerHttpSecurity.CorsSpec::disable)
+                .csrf(ServerHttpSecurity.CsrfSpec::disable);
 
         return httpSecurity.build();
     }

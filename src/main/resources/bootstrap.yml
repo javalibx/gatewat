@@ -1,5 +1,5 @@
 server:
-  port: 8090
+  port: 7000
 
 spring:
   application:
@@ -8,8 +8,7 @@ spring:
     active: dev
   cloud:
     gateway:
-      routes:
-        - id: biz-auth
-          uri: lb://biz-auth
-          predicates:
-            - Path=/auth/**
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true

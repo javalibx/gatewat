@@ -19,7 +19,7 @@ public class ClientFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String ip = ServerRequestUtils.getClientIp(exchange.getRequest());
         ServerHttpRequest request = exchange.getRequest().mutate()
-                .header(RequestHeaders.CLIENT_ID, ip)
+                .header(RequestHeaders.CLIENT_IP, ip)
                 .build();
         return chain.filter(exchange.mutate().request(request).build());
     }
