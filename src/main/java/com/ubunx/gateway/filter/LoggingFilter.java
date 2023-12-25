@@ -12,8 +12,6 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -29,7 +27,7 @@ import java.util.regex.Pattern;
  * 请求日志过滤器，将请求耗时、请求信息写入日志
  */
 @Slf4j
-@Component
+//@Component
 public class LoggingFilter implements GlobalFilter, Ordered {
 
     @Override
@@ -122,7 +120,7 @@ public class LoggingFilter implements GlobalFilter, Ordered {
 
         @Override
         public String toString() {
-            return JsonUtils.object2Json(this);
+            return JsonUtils.toJson(this);
         }
     }
 }

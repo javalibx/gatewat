@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.javalibx.component</groupId>
-        <artifactId>javalibx-parent</artifactId>
+        <artifactId>parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <groupId>com.ubunx</groupId>
@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>com.javalibx.component</groupId>
-            <artifactId>javalibx-common</artifactId>
+            <artifactId>common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -47,6 +47,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.javalibx.component</groupId>
+            <artifactId>security</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

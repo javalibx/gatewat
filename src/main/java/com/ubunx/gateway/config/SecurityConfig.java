@@ -2,10 +2,10 @@ package com.ubunx.gateway.config;
 
 
 import com.javalibx.component.common.support.constant.SecurityConstants;
-import com.ubunx.gateway.security.JwtAuthenticationEntryPoint;
-import com.ubunx.gateway.security.ResourceService;
-import com.ubunx.gateway.security.authorization.ResourceAccessDeniedHandler;
-import com.ubunx.gateway.security.authorization.ResourceAuthorizationManager;
+import com.javalibx.component.security.ResourceService;
+import com.javalibx.component.security.server.JwtAuthenticationEntryPoint;
+import com.javalibx.component.security.server.authorization.ResourceAccessDeniedHandler;
+import com.javalibx.component.security.server.authorization.ResourceAuthorizationManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,10 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
 
 @Slf4j
 @Configuration
@@ -38,7 +41,7 @@ public class SecurityConfig {
 
     @Bean
     ResourceAuthorizationManager resourceAuthorizationManager(ResourceService resourceService) {
-        return new ResourceAuthorizationManager(resourceService);
+        return new ResourceAuthorizationManager(properties.getPath().getWhitelist(), resourceService);
     }
 
     @Bean
@@ -46,12 +49,23 @@ public class SecurityConfig {
                                                          ResourceAuthorizationManager resourceAuthorizationManager) {
         log.info("[GSC] 加载Security配置信息...");
         httpSecurity
-                .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/auth/**", "/hr/**", "/pub/**", "/actuator/**").permitAll()
-                        .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                        .anyExchange()
-                        .access(resourceAuthorizationManager)
-                )
+                .authorizeExchange(exchange -> {
+                    exchange.pathMatchers(HttpMethod.OPTIONS).permitAll();
+                    // 匿名路径
+                    if (Objects.nonNull(properties.getPath().getAnonymous())) {
+                        exchange.pathMatchers(properties.getPath().getAnonymous()).permitAll();
+                    }
+                    // 脚本
+                    if (Objects.nonNull(properties.getPath().getScripts())) {
+                        ServerHttpSecurity.AuthorizeExchangeSpec.Access access = exchange.pathMatchers(properties.getPath().getScripts());
+                        if (StringUtils.hasText(properties.getPath().getScriptIpaddress())) {
+                            access.hasIpAddress(properties.getPath().getScriptIpaddress());
+                        } else {
+                            access.permitAll();
+                        }
+                    }
+                    exchange.anyExchange().access(resourceAuthorizationManager);
+                })
                 .oauth2ResourceServer(oars -> oars.jwt(jwt -> {
                     // 将jwt信息转换成JwtAuthenticationToken对象
                     jwt.jwtAuthenticationConverter(grantedAuthoritiesExtractor());
